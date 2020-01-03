@@ -10,8 +10,6 @@ python:
   - "3.5"
   - "3.4"
   - "2.7"
-  - "nightly"
-  - "pypy3.5-6.0"
 env: TOXENV=py,codecov
 
 matrix:
@@ -22,8 +20,8 @@ matrix:
       python: nightly
       env: TOXENV=py,codecov
     - os: linux
-      dist: bionic
-      python: xenail
+      dist: xenail
+      python: nightly
       env: TOXENV=py,codecov
     - os: linux
       dist: xenail 
