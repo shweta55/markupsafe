@@ -1,3 +1,6 @@
+arch: 
+    - amd64
+    - arm64
 os: linux
 dist: xenial
 language: python
@@ -13,7 +16,46 @@ env: TOXENV=py,codecov
 
 matrix:
   include:
+    - arch: arm64
+      os: linux
+      dist: bionic
+      python: nightly
+      env: TOXENV=py,codecov
+    - os: linux
+      dist: bionic
+      python: xenail
+      env: TOXENV=py,codecov
+    - os: linux
+      dist: xenail 
+      python: pypy3.5-6.0
+      env: TOXENV=py,codecov
+      
+    - arch: arm64
+      env: TOXENV=stylecheck,docs-html
     - env: TOXENV=stylecheck,docs-html
+    - arch: arm64
+      stage: wheel
+      sudo: required
+      services:
+        - docker
+      install:
+        - pip install cibuildwheel
+      script: &wheel_script
+        - cibuildwheel --output-dir wheelhouse
+      deploy: &wheel_deploy
+        on:
+          all_branches: true
+          condition: $TRAVIS_BRANCH =~ ^(master|[0-9]+(.[0-9]+)*(.x)?)$
+        skip_cleanup: true
+        provider: s3
+        access_key_id:
+          secure: "zAF4qUM+MwCDt1NmMYDgHKldcQi+J2OdC/UCLfJLA/HRzIQoulIRKBcy6IEbf4IPaejwrhPtGG2LX9fIVBWsZs/3IyInf9ywSD88IdLPO0FUHcd6ebAsQSYuG2naVC9r0G6dDZzXT8vSf4Q2OxEsdsUg+NZtOmtv45jGlnuHc5Y="
+        secret_access_key:
+          secure: "I6OUM83O0o/N8Zvxk3vI40JDjQKniSUPPyeY5H53I+DtuUfFl0JOYHXr+XKjhM/CCGT3A2lJwugE1YOXch7fc5QRxp30Dl61ASOY3QFRp2EGNPNTBi5l9NYChPSEC96t6LzZJTSqvRmC+STrpinPW03egNKPJbBU8OKYyEyJr+M="
+        bucket: pallets-wheels
+        region: us-east-1
+        local_dir: wheelhouse
+        upload-dir: markupsafe
     - stage: wheel
       sudo: required
       services:
